@@ -14,28 +14,37 @@ export class LoginService {
   ) {}
 
   async validateUser(user: User) {
-    console.log(user);
+    //console.log(user);
 
     const isExistUser = await this.userRepository.findOneBy({
       email: user.email,
     });
     if (isExistUser) {
       const payload = { userId: isExistUser.id, role: isExistUser.role };
-      return {
-        accessToken: await this.jwtModule.sign(payload),
-      };
+      const token = await this.getToken(payload);
+      return token.accessToken;
     }
     console.log('User not found, creating new user');
     const newUser = await this.userRepository.create(user);
     await this.userRepository.save(newUser);
     const payload = { userId: newUser.id, role: newUser.role };
-    return {
-      accessToken: await this.jwtModule.sign(payload),
-    };
+    const token = await this.getToken(payload);
+    return token.accessToken;
   }
 
   async findUser(id: number) {
     const user = await this.userRepository.findOneBy({ id: id });
     return user;
+  }
+
+  async getToken(payload: any) {
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtModule.signAsync(payload),
+      this.jwtModule.signAsync(payload),
+    ]);
+    return {
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    };
   }
 }

@@ -1,13 +1,15 @@
 import { Controller, Get, Req, UseGuards, Res, Inject } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { LoginService } from './login.service';
-import { AuthJwt } from './utils/AuthJwt';
+import { AuthJwt } from './utils/RoleGuard';
 import { Roles } from './role/roles.decorator';
 import { Role } from './role/role.enum';
+import { JwtStrategy } from './utils/JwtStrategy';
 
 @Controller('auth')
 export class LoginController {
   constructor(@Inject('LOGIN_SERVICE') private loginService: LoginService) {}
+
   @Get('google')
   @UseGuards(AuthGuard('google'))
   authGoogle() {
@@ -17,19 +19,32 @@ export class LoginController {
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   async authGoogleCallback(@Req() req, @Res() res) {
-    const displayName = req.user.displayName;
-    const email = req.user.emails[0].value;
-    const jwt = await this.loginService.validateUser({
-      displayName: displayName,
-      email: email,
-    });
-    res.json({ message: 'Success', accessToken: jwt });
+    // const displayName = req.user.displayName;
+    // const email = req.user.emails[0].value;
+    // const jwt = await this.loginService.validateUser({
+    //   displayName: displayName,
+    //   email: email,
+    // });
+    // res.json({ message: 'Success', accessToken: jwt });
+    res.json({ message: 'Success', accessToken: req.user });
+  }
+
+  @Get('twitter')
+  @UseGuards(AuthGuard('twitter'))
+  authTwitter() {
+    return { message: 'Authentication Twitter' };
+  }
+
+  @Get('twitter/callback')
+  @UseGuards(AuthGuard('twitter'))
+  async authTwitterCallback(@Req() req, @Res() res) {
+    res.json(req.user);
   }
 
   // @UseGuards(AuthenticatedGuard)
   @Get('status')
   @Roles(Role.User)
-  @UseGuards(AuthJwt)
+  @UseGuards(AuthGuard('jwt'), AuthJwt)
   user(@Req() req): any {
     const user = req.user;
     return { message: 'Xin chào', user: user };
