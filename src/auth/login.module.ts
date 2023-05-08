@@ -3,11 +3,12 @@ import { LoginService } from './login.service';
 import { LoginController } from './login.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './models/user.entity';
-import { GoogleStrategy } from './utils/GoogleStrategy';
+import { GoogleStrategy } from './utils/Strategies/GoogleStrategy';
 import { JwtModule } from '@nestjs/jwt';
-import { AuthJwt } from './utils/RoleGuard';
-import { TwitterStrategy1 } from './utils/TwitterStrategy';
-import { JwtStrategy } from './utils/JwtStrategy';
+import { AuthJwt } from './utils/Guards/RoleGuard';
+import { TwitterStrategy1 } from './utils/Strategies/TwitterStrategy';
+import { JwtStrategy } from './utils/Strategies/JwtStrategy';
+import { JwtStrategyWithRT } from './utils/Strategies/RefreshTokenStrategy';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { JwtStrategy } from './utils/JwtStrategy';
     GoogleStrategy,
     TwitterStrategy1,
     JwtStrategy,
+    JwtStrategyWithRT,
     AuthJwt,
     { provide: 'LOGIN_SERVICE', useClass: LoginService },
   ],

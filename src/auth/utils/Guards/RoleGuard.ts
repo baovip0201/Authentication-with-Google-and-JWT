@@ -5,8 +5,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Role } from '../role/role.enum';
-import { ROLES_KEY } from '../role/roles.decorator';
+import { Role } from '../../role/role.enum';
+import { ROLES_KEY } from '../../role/roles.decorator';
 
 @Injectable()
 export class AuthJwt implements CanActivate {

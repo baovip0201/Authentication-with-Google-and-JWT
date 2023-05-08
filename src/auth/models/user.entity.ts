@@ -5,10 +5,16 @@ export class UserEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ nullable: true })
+  username: string;
+
+  @Column({ nullable: true })
+  password: string;
+
   @Column()
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   displayName: string;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
@@ -16,4 +22,7 @@ export class UserEntity {
 
   @Column()
   role: string;
+
+  @Column({ nullable: true })
+  refreshToken: string;
 }
