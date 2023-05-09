@@ -25,4 +25,10 @@ export class UserEntity {
 
   @Column({ nullable: true })
   refreshToken: string;
+
+  @Column({ nullable: true })
+  confirmationToken: string;
+
+  @Column({ default: false })
+  isVerified: boolean;
 }

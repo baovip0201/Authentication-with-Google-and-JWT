@@ -9,6 +9,7 @@ import {
   Body,
   HttpCode,
   HttpStatus,
+  Param,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { LoginService } from './login.service';
@@ -26,6 +27,12 @@ export class LoginController {
   @Post('signup')
   async signUp(@Body() user: User) {
     return await this.loginService.signUp(user);
+  }
+
+  @Get('confirmation-user/:token')
+  @HttpCode(HttpStatus.OK)
+  async confirmationUser(@Param('token') token: string) {
+    return await this.loginService.confirmationUser(token);
   }
 
   @Post('signin')
@@ -51,13 +58,6 @@ export class LoginController {
   @Get('auth/google/callback')
   @UseGuards(AuthGuard('google'))
   async authGoogleCallback(@Req() req, @Res() res) {
-    // const displayName = req.user.displayName;
-    // const email = req.user.emails[0].value;
-    // const jwt = await this.loginService.validateUser({
-    //   displayName: displayName,
-    //   email: email,
-    // });
-    // res.json({ message: 'Success', accessToken: jwt });
     res.json({ message: 'Success', accessToken: req.user });
   }
 

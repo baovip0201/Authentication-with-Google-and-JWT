@@ -11,6 +11,7 @@ import { User } from './models/user.interface';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { Role } from './role/role.enum';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class LoginService {
@@ -18,6 +19,7 @@ export class LoginService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private jwtService: JwtService,
+    private mailService: MailService,
   ) {}
 
   async validateUser(user: User) {
@@ -51,13 +53,33 @@ export class LoginService {
       throw new HttpException('Passwords do not match', HttpStatus.BAD_REQUEST);
 
     const hashPassword = await bcrypt.hashSync(password, 10);
+    const token = Math.floor(1000 + Math.random() * 9000).toString();
     const newUser = await this.userRepository.create({
       password: hashPassword,
       ...userData,
+      confirmationToken: token,
     });
 
     await this.userRepository.save(newUser);
+
+    await this.mailService.sendUserConfirmation(userData, token);
+
     return { message: 'User created', data: newUser };
+  }
+
+  async confirmationUser(token: string) {
+    const user = await this.userRepository.findOneBy({
+      confirmationToken: token,
+    });
+    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+
+    user.isVerified = true;
+    user.confirmationToken = undefined;
+    await this.userRepository.save(user);
+
+    const payload = { userId: user.id, role: user.role };
+    const newToken = await this.getToken(payload);
+    return { message: 'Confirmation successful', data: newToken };
   }
   async signIn(username: string, password: string) {
     const isExistingUser = await this.userRepository.findOneBy({

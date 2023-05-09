@@ -9,6 +9,7 @@ import { AuthJwt } from './utils/Guards/RoleGuard';
 import { TwitterStrategy1 } from './utils/Strategies/TwitterStrategy';
 import { JwtStrategy } from './utils/Strategies/JwtStrategy';
 import { JwtStrategyWithRT } from './utils/Strategies/RefreshTokenStrategy';
+import { MailModule } from 'src/mail/mail.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { JwtStrategyWithRT } from './utils/Strategies/RefreshTokenStrategy';
         expiresIn: '1h',
       },
     }),
+    MailModule,
   ],
   controllers: [LoginController],
   providers: [
