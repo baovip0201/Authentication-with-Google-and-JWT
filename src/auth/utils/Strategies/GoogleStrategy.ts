@@ -20,9 +20,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     const user: User = {
       email: profile.emails[0].value,
       displayName: profile.displayName,
+      role: 'user',
     };
-    const token = await this.loginService.validateUser(user);
-    //console.log(token);
-    return token;
+    return user;
   }
 }

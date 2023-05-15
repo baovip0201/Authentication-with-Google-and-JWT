@@ -10,6 +10,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Redirect,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { LoginService } from './login.service';
@@ -19,6 +20,7 @@ import { Role } from './role/role.enum';
 import { JwtStrategy } from './utils/Strategies/JwtStrategy';
 import { User } from './models/user.interface';
 import { RtGuard } from './utils/Guards/RtGuard';
+import { Response } from 'express';
 
 @Controller('')
 export class LoginController {
@@ -57,8 +59,13 @@ export class LoginController {
 
   @Get('auth/google/callback')
   @UseGuards(AuthGuard('google'))
-  async authGoogleCallback(@Req() req, @Res() res) {
-    res.json({ message: 'Success', accessToken: req.user });
+  async authGoogleCallback(@Req() req, @Res() res: Response) {
+    const token = await this.loginService.validateUser(req.user);
+    if (token) {
+      res.redirect('http://localhost:4200/home/' + token);
+    } else {
+      res.redirect('http://localhost:4200');
+    }
   }
 
   @Get('auth/twitter')

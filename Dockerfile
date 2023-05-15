@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Thiết lập cổng để ứng dụng lắng nghe
-EXPOSE 3000
+EXPOSE 8080
 
 # Khởi chạy ứng dụng NestJS
 CMD ["npm", "run", "start"]
